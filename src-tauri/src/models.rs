@@ -2,26 +2,17 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub enum OptimizationSense {
-    Max,
-    Min,
-}
+pub enum OptimizationSense { Max, Min }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub enum ConstraintRelation {
-    LessOrEqual,
-    GreaterOrEqual,
-    Equal,
-}
+pub enum ConstraintRelation { LessOrEqual, GreaterOrEqual, Equal }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub enum SolutionStatus {
-    Optimal,
-    Infeasible,
-    Unbounded,
-}
+pub enum SolutionStatus { Optimal, Infeasible, Unbounded }
+
+// --- STRUCTURES D'ENTRÉE ---
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -47,6 +38,9 @@ pub struct LinearProgramInput {
     pub constraints: Vec<ConstraintInput>,
 }
 
+// --- STRUCTURES DE SORTIE ---
+// f64 n'implémente pas Eq → on utilise seulement PartialEq ici
+
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct RationalValue {
@@ -61,6 +55,20 @@ pub struct RationalValue {
 pub struct Point2D {
     pub x1: RationalValue,
     pub x2: RationalValue,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct HatchArea {
+    pub points: Vec<Point2D>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct LineMetadata {
+    pub label: String,
+    pub p1: Point2D,
+    pub p2: Point2D,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -84,11 +92,9 @@ pub struct BoundingBox {
 pub struct SolveResponse {
     pub status: SolutionStatus,
     pub vertices: Vec<Point2D>,
-    // Indexes reference the augmented list of constraints:
-    // user constraints first, then x1 >= 0 and x2 >= 0.
-    pub active_constraints: Vec<usize>,
+    pub hatch_areas: Vec<HatchArea>,
+    pub lines: Vec<LineMetadata>,
     pub bounding_box: BoundingBox,
     pub optimum: Option<OptimalSolution>,
-    pub domain_bounded: bool,
     pub message: String,
 }

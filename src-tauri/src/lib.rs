@@ -2,8 +2,9 @@ pub mod models;
 pub mod solver;
 
 #[tauri::command]
-async fn solve_linear_program(input: models::LinearProgramInput) -> Result<models::SolveResponse, String> {
-    // Le solveur utilise num-rational pour une précision absolue
+async fn solve_linear_program(
+    input: models::LinearProgramInput,
+) -> Result<models::SolveResponse, String> {
     solver::solve(&input).map_err(|e| e.to_string())
 }
 
